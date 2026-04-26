@@ -234,7 +234,6 @@ code{background:var(--b50);padding:1px 5px;border-radius:5px;font-family:'DM Mon
 
 <main>
 
-<!-- ═══════════ BEREGNUNG ═══════════ -->
 <div class="page active" id="page-beregnung">
   <div class="map-card">
     <div class="map-card-header">
@@ -287,17 +286,28 @@ code{background:var(--b50);padding:1px 5px;border-radius:5px;font-family:'DM Mon
       <label for="f-feld-link">Feld verknüpfen (optional)</label>
       <select id="f-feld-link" onchange="onFeldLink()"><option value="">– Kein Feld –</option></select>
     </div>
+    
+    
+    <div class="field" id="flaeche-wrap" style="display:none">
+      <label>Zu beregnende Fläche (ha) *</label>
+      <div class="row2">
+        <select id="f-flaeche-art" onchange="toggleFlaecheArt()">
+          <option value="ganz">Ganzes Feld</option>
+          <option value="teil">Teilfläche</option>
+        </select>
+        <input type="number" id="f-flaeche" step="0.01" min="0" placeholder="ha" inputmode="decimal" readonly>
+      </div>
+    </div>
     <div class="field"><label for="f-standort">Standort / Zapfstelle *</label><input type="text" id="f-standort" placeholder="z.B. Feld Süd – Zapfstelle A"></div>
     <div class="field">
       <label for="f-start">Anfangszählerstand (m³) *</label>
       <div class="m3-wrap"><input type="number" id="f-start" placeholder="0000" step="0.001" min="0" inputmode="decimal"><span class="m3-unit">m³</span></div>
     </div>
-    <div class="field"><label for="f-datum">Startdatum &amp; Uhrzeit</label><input type="datetime-local" id="f-datum"></div>
+   
     <button class="btn btn-green" onclick="beregnungStarten()">▶&nbsp; Beregnung starten</button>
   </div>
 </div>
 
-<!-- ═══════════ FELDER ═══════════ -->
 <div class="page" id="page-felder">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
     <div style="font-size:15px;font-weight:600">Meine Äcker &amp; Bodenkultur</div>
@@ -306,7 +316,6 @@ code{background:var(--b50);padding:1px 5px;border-radius:5px;font-family:'DM Mon
   <div id="felder-list"></div>
 </div>
 
-<!-- ═══════════ AUSWERTUNG ═══════════ -->
 <div class="page" id="page-auswertung">
   <div class="card">
     <div class="card-label">📊 Jahresauswertung</div>
@@ -347,7 +356,6 @@ code{background:var(--b50);padding:1px 5px;border-radius:5px;font-family:'DM Mon
   </div>
 </div>
 
-<!-- ═══════════ PROTOKOLL ═══════════ -->
 <div class="page" id="page-protokoll">
   <div class="card">
     <div class="card-label">📋 Abgeschlossene Vorgänge</div>
@@ -359,7 +367,6 @@ code{background:var(--b50);padding:1px 5px;border-radius:5px;font-family:'DM Mon
   </div>
 </div>
 
-<!-- ═══════════ EINSTELLUNGEN ═══════════ -->
 <div class="page" id="page-einstellungen">
   <div class="card">
     <div class="card-label">🔗 Google Sheets</div>
@@ -390,7 +397,6 @@ code{background:var(--b50);padding:1px 5px;border-radius:5px;font-family:'DM Mon
 
 </main>
 
-<!-- BEENDEN MODAL -->
 <div class="modal-overlay" id="end-modal">
   <div class="modal-box">
     <div class="modal-title">⏹ Beregnung beenden</div>
@@ -402,6 +408,7 @@ code{background:var(--b50);padding:1px 5px;border-radius:5px;font-family:'DM Mon
     <div class="verbrauch-preview" id="verbrauch-preview" style="display:none">
       <div class="verbrauch-num" id="verbrauch-num">—</div>
       <div class="verbrauch-label">Entnommenes Wasser (m³)</div>
+      <div id="mm-preview" style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(0,0,0,0.05); font-weight:600; color:var(--b600); font-size:14px; display:none;"></div>
     </div>
     <div class="btn-row">
       <button class="btn btn-ghost" onclick="closeEndModal()">Abbrechen</button>
@@ -410,28 +417,12 @@ code{background:var(--b50);padding:1px 5px;border-radius:5px;font-family:'DM Mon
   </div>
 </div>
 
-<!-- FELD ANLEGEN MODAL -->
 <div class="modal-overlay" id="feld-modal">
   <div class="modal-box">
     <div class="modal-title" id="feld-modal-title">🌾 Neuen Acker anlegen</div>
     <div class="modal-sub">Grunddaten des Ackers eingeben</div>
     <div class="field"><label>Name des Ackers *</label><input type="text" id="fm-name" placeholder="z.B. Nordfeld, Wiese Süd…"></div>
-    <div class="row2">
-      <div class="field"><label>Größe</label><input type="number" id="fm-groesse" step="0.01" min="0" placeholder="3.5" inputmode="decimal"></div>
-      <div class="field"><label>Einheit</label><select id="fm-einheit"><option value="ha">ha</option><option value="m²">m²</option></select></div>
-    </div>
-    <div class="field">
-      <label>Bodenart</label>
-      <select id="fm-bodenart">
-        <option value="">– Wählen –</option>
-        <option>Sand</option><option>Lehmiger Sand</option><option>Sandiger Lehm</option>
-        <option>Lehm</option><option>Toniger Lehm</option><option>Ton</option>
-        <option>Schluff</option><option>Humus</option><option>Sonstiges</option>
-      </select>
-    </div>
-    <div class="field"><label>Katastral-Nummer / Parzelle</label><input type="text" id="fm-parzelle" placeholder="z.B. 1234/5"></div>
-    <div class="field"><label>Zugehöriger Standort (Zapfstelle)</label><input type="text" id="fm-zapfstelle" placeholder="z.B. Zapfstelle A – Feld Süd"></div>
-    <div class="field"><label>Notizen</label><textarea id="fm-notizen" placeholder="Besonderheiten, Drainage, …"></textarea></div>
+    <div class="field"><label>Größe (ha)</label><input type="number" id="fm-groesse" step="0.01" min="0" placeholder="3.5" inputmode="decimal"></div>
     <div class="btn-row">
       <button class="btn btn-ghost" onclick="closeFeldModal()">Abbrechen</button>
       <button class="btn btn-brown" onclick="saveFeld()">✓ Speichern</button>
@@ -439,7 +430,6 @@ code{background:var(--b50);padding:1px 5px;border-radius:5px;font-family:'DM Mon
   </div>
 </div>
 
-<!-- KULTUR HINZUFÜGEN MODAL -->
 <div class="modal-overlay" id="kultur-modal">
   <div class="modal-box">
     <div class="modal-title">🌱 Bodenkultur eintragen</div>
@@ -496,15 +486,12 @@ let editFeldId=null,kulturFeldId=null;
 
 // ─── INIT ────────────────────────────────────────
 function init(){
-  nowDatum();loadSettingsUI();updateSyncPill();fillJahre();
+  loadSettingsUI();updateSyncPill();fillJahre();
   renderAktiv();updateFeldSelector();
   setInterval(updateTimers,1000);
   setInterval(refreshMapMarkers,5000);
 }
-function nowDatum(){
-  const n=new Date(),p=x=>String(x).padStart(2,'0');
-  document.getElementById('f-datum').value=`${n.getFullYear()}-${p(n.getMonth()+1)}-${p(n.getDate())}T${p(n.getHours())}:${p(n.getMinutes())}`;
-}
+
 
 // ─── SETTINGS ───────────────────────────────────
 function getUrl(){return localStorage.getItem('wz_url')||'';}
@@ -621,27 +608,58 @@ function updateFeldSelector(){
   if(cur)sel.value=cur;
 }
 function onFeldLink(){
-  const fid=document.getElementById('f-feld-link').value;if(!fid)return;
+  const fid=document.getElementById('f-feld-link').value;
+  const fw=document.getElementById('flaeche-wrap'), fa=document.getElementById('f-flaeche-art'), fi=document.getElementById('f-flaeche');
+  
+  if(!fid){
+    fw.style.display='none'; fi.value='';
+    return;
+  }
+  
+  fw.style.display='block';
   const f=getFelder().find(x=>x.id==fid);
-  if(f&&f.zapfstelle)document.getElementById('f-standort').value=f.zapfstelle;
+  if(f){
+    if(f.zapfstelle) document.getElementById('f-standort').value=f.zapfstelle;
+    fa.value='ganz';
+    fi.value=f.groesse||'';
+    fi.readOnly=true;
+  }
+}
+
+function toggleFlaecheArt(){
+  const fa=document.getElementById('f-flaeche-art').value, fi=document.getElementById('f-flaeche');
+  if(fa==='teil'){
+    fi.readOnly=false; fi.value=''; fi.focus();
+  }else{
+    const fid=document.getElementById('f-feld-link').value;
+    const f=getFelder().find(x=>x.id==fid);
+    fi.value=f?.groesse||''; fi.readOnly=true;
+  }
 }
 
 function beregnungStarten(){
   const name=document.getElementById('f-name').value.trim();
   const standort=document.getElementById('f-standort').value.trim();
   const start=document.getElementById('f-start').value.trim();
-  const datum=document.getElementById('f-datum').value;
   const qr=document.getElementById('qr-text').textContent;
   const feldId=document.getElementById('f-feld-link').value||null;
+  const flaeche=parseFloat(document.getElementById('f-flaeche').value)||null; // NEU
+  
   if(!name||!standort||!start){showToast('⚠ Pflichtfelder ausfüllen');return;}
   const s=parseFloat(start);if(isNaN(s)||s<0){showToast('⚠ Ungültiger Zählerstand');return;}
-  const entry={id:Date.now(),name,standort,startstand:s,datum:datum||new Date().toISOString(),qr,feldId,lat:currentGPS?.lat||null,lng:currentGPS?.lng||null,acc:currentGPS?.acc||null};
+  
+  const entry={id:Date.now(),name,standort,startstand:s,datum:new Date().toISOString(),qr,feldId,flaeche,lat:currentGPS?.lat||null,lng:currentGPS?.lng||null,acc:currentGPS?.acc||null};
   const aktiv=getAktiv();aktiv.push(entry);saveAktiv(aktiv);
+  
   document.getElementById('f-start').value='';document.getElementById('f-name').value='';
   document.getElementById('f-feld-link').value='';
-  resetQR();nowDatum();currentGPS=null;
+  document.getElementById('flaeche-wrap').style.display='none'; // NEU
+  resetQR();currentGPS=null;
   document.getElementById('gps-chip').className='gps-chip idle';document.getElementById('gps-icon').textContent='📍';document.getElementById('gps-text').textContent='Standort noch nicht abgerufen';
-  renderAktiv();showToast(entry.lat?'▶ Gestartet mit GPS 📍':'▶ Beregnung gestartet');
+  
+  renderAktiv();
+  showToast(entry.lat?'▶ Gestartet mit GPS 📍':'▶ Beregnung gestartet');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function renderAktiv(){
@@ -670,7 +688,8 @@ function renderAktiv(){
           <div class="aktiv-stat"><div class="aktiv-stat-label">Gestartet</div><div class="aktiv-stat-val" style="font-size:12px">${dt}</div></div>
           <div class="aktiv-stat"><div class="aktiv-stat-label">Laufzeit</div><div class="aktiv-stat-val aktiv-timer" data-start="${v.datum}" id="timer-${v.id}">${getElapsed(v.datum)}</div></div>
           <div class="aktiv-stat"><div class="aktiv-stat-label">GPS</div><div class="aktiv-stat-val" style="font-size:12px;color:${v.lat?'var(--green)':'var(--muted)'}">${v.lat?'✓ Erfasst':'Nicht verfügbar'}</div></div>
-        </div>
+          ${v.flaeche?`<div class="aktiv-stat"><div class="aktiv-stat-label">Fläche</div><div class="aktiv-stat-val">${v.flaeche} ha</div></div>`:''}
+          </div>
         <div class="btn-row">
           <button class="btn btn-danger btn-sm" onclick="aktivLoeschen(${v.id})">✕</button>
           ${v.lat?`<button class="btn btn-ghost btn-sm" onclick="zoomToMarker(${v.id})">🗺️</button>`:''}
@@ -702,19 +721,35 @@ function openEndModal(id){
 function closeEndModal(){document.getElementById('end-modal').classList.remove('show');activeEndId=null;}
 function updateVerbrauchPreview(){
   const v=getAktiv().find(x=>x.id===activeEndId);if(!v)return;
-  const end=parseFloat(document.getElementById('f-end').value),prev=document.getElementById('verbrauch-preview');
+  const end=parseFloat(document.getElementById('f-end').value), prev=document.getElementById('verbrauch-preview'), mmPrev=document.getElementById('mm-preview');
+  
   if(isNaN(end)||end<=0){prev.style.display='none';return;}
   const diff=end-parseFloat(v.startstand);
   document.getElementById('verbrauch-num').textContent=diff>0?diff.toFixed(3):'—';
+  
+  // NEU: Niederschlag in mm berechnen (10 m³ = 1 mm pro ha)
+  if(diff>0 && v.flaeche){
+    const mm = diff / (v.flaeche * 10);
+    mmPrev.textContent = `🌧️ entspricht ${mm.toFixed(1)} mm (l/m²)`;
+    mmPrev.style.display = 'block';
+  } else {
+    mmPrev.style.display = 'none';
+  }
+  
   prev.style.display=diff>0?'block':'none';
 }
+
 async function beregnungBeenden(){
   const v=getAktiv().find(x=>x.id===activeEndId);if(!v)return;
   const endVal=parseFloat(document.getElementById('f-end').value);
   if(isNaN(endVal)||endVal<=0){showToast('⚠ Endzählerstand eingeben');return;}
   const verbrauch=endVal-parseFloat(v.startstand);
   if(verbrauch<=0){showToast('⚠ Endstand muss größer als Anfangsstand sein');return;}
-  const entry={id:Date.now(),name:v.name,standort:v.standort,startstand:v.startstand,endstand:endVal,wasser:verbrauch,datum:v.datum,endDatum:new Date().toISOString(),qr:v.qr,laufzeit:getElapsed(v.datum),lat:v.lat||null,lng:v.lng||null,feldId:v.feldId||null};
+  
+  // NEU: mm berechnen und mitspeichern
+  const mm = v.flaeche ? (verbrauch / (v.flaeche * 10)) : null;
+  
+  const entry={id:Date.now(),name:v.name,standort:v.standort,startstand:v.startstand,endstand:endVal,wasser:verbrauch,flaeche:v.flaeche,mm:mm,datum:v.datum,endDatum:new Date().toISOString(),qr:v.qr,laufzeit:getElapsed(v.datum),lat:v.lat||null,lng:v.lng||null,feldId:v.feldId||null};
   const local=getLocal();local.unshift(entry);localStorage.setItem('wz_eintraege',JSON.stringify(local));
   saveAktiv(getAktiv().filter(x=>x.id!==activeEndId));closeEndModal();renderAktiv();
   const url=getUrl();
@@ -782,7 +817,7 @@ function renderFelder(){
         <div class="feld-avatar" style="background:${bgColor}">${icon}</div>
         <div class="feld-info">
           <div class="feld-name">${f.name}</div>
-          <div class="feld-meta">${f.groesse?f.groesse+' '+f.einheit:''}${f.bodenart?' · '+f.bodenart:''}${f.parzelle?' · '+f.parzelle:''}</div>
+          <div class="feld-meta">${f.groesse?f.groesse+' '+f.einheit:''}</div>
         </div>
         ${kulturBadge}
         <span class="chevron" id="chev-${f.id}">›</span>
@@ -801,8 +836,6 @@ function renderFelder(){
           </div>
           ${wasserRows}
         </div>
-        ${f.zapfstelle?`<div class="feld-section"><div class="feld-section-title">Zapfstelle</div><div style="font-size:13px;color:var(--muted)">📍 ${f.zapfstelle}</div></div>`:''}
-        ${f.notizen?`<div class="feld-section"><div class="feld-section-title">Notizen</div><div style="font-size:13px;color:var(--muted);line-height:1.5">${f.notizen}</div></div>`:''}
         <div class="feld-section">
           <div class="btn-row">
             <button class="btn btn-ghost btn-sm" onclick="openFeldModal(${f.id})">✏️ Bearbeiten</button>
@@ -825,22 +858,17 @@ function toggleFeld(id){
   body.classList.toggle('open',!isOpen);chev.classList.toggle('open',!isOpen);
 }
 
-// Feld Modal
+// ANGEPASST: Feld Modal nur noch mit Name & Größe (ha)
 function openFeldModal(id){
   editFeldId=id||null;
   document.getElementById('feld-modal-title').textContent=id?'✏️ Acker bearbeiten':'🌾 Neuen Acker anlegen';
-  ['fm-name','fm-groesse','fm-bodenart','fm-parzelle','fm-zapfstelle','fm-notizen','fm-einheit'].forEach(i=>{
+  ['fm-name','fm-groesse'].forEach(i=>{
     const el=document.getElementById(i);if(el)el.value='';
   });
   if(id){
     const f=getFelder().find(x=>x.id===id);if(!f)return;
     document.getElementById('fm-name').value=f.name||'';
     document.getElementById('fm-groesse').value=f.groesse||'';
-    document.getElementById('fm-einheit').value=f.einheit||'ha';
-    document.getElementById('fm-bodenart').value=f.bodenart||'';
-    document.getElementById('fm-parzelle').value=f.parzelle||'';
-    document.getElementById('fm-zapfstelle').value=f.zapfstelle||'';
-    document.getElementById('fm-notizen').value=f.notizen||'';
   }
   document.getElementById('feld-modal').classList.add('show');
 }
@@ -849,13 +877,14 @@ function saveFeld(){
   const name=document.getElementById('fm-name').value.trim();
   if(!name){showToast('⚠ Name eingeben');return;}
   const feld={
-    id:editFeldId||Date.now(),name,
+    id:editFeldId||Date.now(),
+    name,
     groesse:parseFloat(document.getElementById('fm-groesse').value)||null,
-    einheit:document.getElementById('fm-einheit').value,
-    bodenart:document.getElementById('fm-bodenart').value,
-    parzelle:document.getElementById('fm-parzelle').value.trim(),
-    zapfstelle:document.getElementById('fm-zapfstelle').value.trim(),
-    notizen:document.getElementById('fm-notizen').value.trim()
+    einheit:'ha', // Standardmäßig immer ha
+    bodenart:'',
+    parzelle:'',
+    zapfstelle:'',
+    notizen:''
   };
   const felder=getFelder();
   if(editFeldId){const idx=felder.findIndex(x=>x.id===editFeldId);if(idx>=0)felder[idx]=feld;else felder.push(feld);}
@@ -912,7 +941,7 @@ function renderProtokoll(){
       <div class="entry-info">
         <div class="entry-name">${e.name}</div>
         <div class="entry-sub">📍 ${e.standort}${feldName?` · 🌾 ${feldName}`:''}</div>
-        <div class="entry-sub">🕐 ${dt}${e.laufzeit?' · ⏱ '+e.laufzeit:''}${e.lat?' · 📍':''}</div>
+        <div class="entry-sub">🕐 ${dt}${e.laufzeit?' · ⏱ '+e.laufzeit:''}${e.mm?' · 🌧️ '+e.mm.toFixed(1)+' mm':''}${e.lat?' · 📍':''}</div>
       </div>
       <div class="entry-val">${parseFloat(e.wasser).toFixed(3)}<small>m³</small></div>
     </div>`;
